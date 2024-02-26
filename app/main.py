@@ -8,6 +8,14 @@ st.set_page_config(
     layout='wide',
     initial_sidebar_state='auto'
 )
+hide_streamlit_style = """
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+</style>
+
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
 def side_slide() -> None:
     with st.sidebar:
@@ -26,25 +34,40 @@ def side_slide() -> None:
 #pages
 def home_page() -> None:
     st.markdown("# Welcome to the BrainGrokker🧠")
-    st.divider()
-    nodes = [Node (
-        id = "note1",
-        title = "Note1",
-        label = "Note1",
-        color = "red",
-        font={'color': 'white', 'size': 16, 'face': 'Arial'}
-        
-    ), Node (
-        id = "note2",
-        title = "Note2",
-        label = "Note2",
-        color = "red",
-        font={'color': 'white', 'size': 16, 'face': 'Arial'}
-    )]
-    edges = [Edge(source="note1", target="note2"),]
-    cfg = Config(height=1400, width=1400)
-    agraph(nodes,edges,cfg)
-    
+    tab1, tab2 = st.tabs(["Create Note", "Graph Vizualization"])
+    with tab2:
+        nodes = [Node (
+            id = "note1",
+            title = "Note1",
+            label = "Note1",
+            color = "red",
+            font={'color': 'white', 'size': 16, 'face': 'Arial'}
+
+        ), Node (
+            id = "note2",
+            title = "Note2",
+            label = "Note2",
+            color = "red",
+            font={'color': 'white', 'size': 16, 'face': 'Arial'}
+        )]
+        edges = [Edge(source="note1", target="note2"),]
+        cfg = Config(height=600, width=600)
+        agraph(nodes,edges,cfg)
+    with tab1:
+        with st.form("create_note", clear_on_submit=True):
+            st.text_input("Name of note", key='name')
+            col1, col2 = st.columns(2)
+            with col1:
+                st.text_input("Tag", key='tag')
+            with col2:
+                st.text_input("Links", value="[]", key='link')
+            submitted = st.text_area("Content", key="content")
+            st.form_submit_button()
+        if submitted:
+                st.balloons()
+                st.write("The created note:")
+                st.markdown(st.session_state.content)
+            
 
 def inbox_page() -> None:
     st.markdown('## Welcome to Inbox')
